@@ -1245,4 +1245,3 @@ showScheduledItemsForDay(now.getFullYear(), now.getMonth(), now.getDate());
   initializeScript();
 });
 </script>
-
