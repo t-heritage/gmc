@@ -1,4 +1,9 @@
 <script>
+
+   console.log("🚀 External script is executing!");
+alert("Script loaded and running!");
+
+
    document
   .querySelectorAll('[ms-code-empty-saved],[ms-code-empty-scheduled],[ms-code-empty-completed]')
   .forEach(el => el.style.display = 'none');
