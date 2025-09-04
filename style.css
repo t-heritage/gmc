@@ -1,0 +1,523 @@
+
+<style>
+  [ms-code-save], [ms-code-unsave], [ms-code-schedule], [ms-code-unschedule], [ms-code-done] {
+    display: none;
+  }
+  [ms-code-save-item], [ms-code-schedule-item] {
+    display: none;
+  }
+  [ms-code-calendar] {
+      font-family: inherit;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    
+    /* Calendar Header */
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    [ms-code-calendar-month-year] {
+      font-size: 36px;
+      font-weight: 600;
+    }
+    
+    .calendar-nav {
+      display: flex;
+      align-items: right;
+      gap: 30px;
+    }
+    
+    [ms-code-calendar-prev-month],
+    [ms-code-calendar-next-month],
+    [ms-code-calendar-today] {
+      background: #68B684;
+      border: 1px solid #ddd;
+      border-radius: 100px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    [ms-code-calendar-prev-month]:hover,
+    [ms-code-calendar-next-month]:hover,
+    [ms-code-calendar-today]:hover {
+      background: #CF5C35;
+      border: 1px solid #CF5C35;
+    }
+    
+    [ms-code-calendar-grid] {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-template-rows: 50px repeat(6, 1fr);
+      height: 100%; 
+      min-height: 360px; 
+    }
+
+    .calendar-day,
+    .calendar-day-header {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .calendar-day.selected {
+      background: #68B684;
+    }
+
+    .calendar-day.today:not(.selected) {
+      background: none !important;
+      font-weight: normal !important;
+    }
+
+    .calendar-day-header {
+      text-align: center;
+      font-weight: 600;
+      padding: 15px;
+      background: #EFB4D2;
+    }
+    
+    .calendar-day {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    
+    .calendar-day:hover {
+      background: #68B684;
+    }
+    
+    .calendar-day.empty {
+      cursor: default;
+    }
+    
+    .calendar-day.today {
+      background: #68B684;
+      font-weight: bold;
+    }
+    
+    .calendar-day.has-events {
+      font-weight: 600;
+    }
+    
+    .calendar-event-dot {
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      background: #EFB3D2;
+      border-radius: 50%;
+    }
+    
+    .calendar-special-dot {
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      background: #68b684;
+      border-radius: 50%;
+    }
+
+    [ms-code-daily-schedule] {
+      overflow: scroll;
+    }
+    
+    .daily-schedule-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-right: 30px;
+      padding-left: 30px;
+      padding-top: 15px;
+      padding-bottom: 15px;
+      background: #CF5C35;
+    }
+    
+    .daily-schedule-header h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #FFFFFF;
+    }
+    
+    .daily-schedule-items {
+      padding-right: 30px;
+      padding-left: 30px;
+      padding-top: 15px;
+      padding-bottom: 15px;
+    }
+    
+    .daily-schedule-no-items {
+      padding-right: 30px;
+      padding-left: 30px;
+      padding-top: 30px;
+      padding-bottom: 30px;
+      color: #888;
+    }
+    
+    .daily-schedule-item {
+      display: flex;
+      align-items: center;
+      padding-bottom: 10px;
+      padding-top: 10px;
+      border-bottom: 1px solid #eaeaea;
+    }
+    
+    .daily-schedule-item:last-child {
+      border-bottom: none;
+    }
+    
+    .daily-schedule-time {
+      font-weight: 600;
+      min-width: 80px;
+    }
+    
+    .daily-schedule-title {
+      flex: 1;
+    }
+
+    .daily-schedule-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .daily-schedule-unschedule,
+    .daily-schedule-done, 
+    .daily-schedule-more {
+      background: none;
+      border: 1px solid #FCE2EC;
+      border-radius: 1rem;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .daily-schedule-done {
+      background: #68B684;
+      color: white;
+      border-color: #68B684;
+    }
+    
+    .daily-schedule-unschedule {
+      background: #FCE2EC;
+      color: #000;
+      border-color: #FCE2EC;
+    }
+
+    .daily-schedule-more {
+      background: white;
+      border-color: #000;
+      text-decoration: none !important;
+    }
+
+    .daily-schedule-more a {
+      text-decoration: none !important;
+    }
+    
+    .daily-schedule-more a:hover,
+    .daily-schedule-more a:focus {
+      text-decoration: none !important;
+      background: #CF5B36;
+      border-color: #CF5B36;
+    }
+    
+    .daily-schedule-unschedule:hover {
+      background: #CF5B36;
+      border-color: #CF5B36;
+    }
+    
+    .daily-schedule-done:hover {
+      background: #FCE2EC;
+    }
+
+    /* Calendar Overlay Styles */
+    .ms-calendar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    
+    .ms-calendar-container {
+      background: white;
+      border-radius: 1rem;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .ms-feedback-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    
+    .ms-feedback-container {
+      background: white;
+      border-radius: 1rem;
+      max-width: 600px;
+      width: 90%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .ms-feedback-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: #EFB3D2;
+      border-bottom: 1px solid #eaeaea;
+    }
+    
+    .ms-feedback-title {
+      font-weight: 600;
+      font-size: 18px;
+    }
+    
+    .ms-feedback-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    
+    .ms-feedback-form {
+      padding: 20px;
+    }
+    
+    .ms-feedback-field {
+      margin-bottom: 20px;
+    }
+    
+    .ms-feedback-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .ms-feedback-stars {
+      display: flex;
+      gap: 5px;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    
+    .ms-star {
+      color: #ddd;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    
+    .ms-star.active {
+      color: #ffd700;
+    }
+    
+    .ms-feedback-textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+      resize: vertical;
+    }
+    
+    .ms-feedback-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .ms-feedback-button {
+      padding: 8px 16px;
+      border-radius: 2rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    
+    .ms-feedback-cancel {
+      background: #f3f3f3;
+      border: 1px solid #ddd;
+    }
+    
+    .ms-feedback-submit {
+      background: #68B684;
+      color: white;
+      border: 1px solid #68B684;
+    }
+    
+    .ms-feedback-submit:hover {
+      background: #45a049;
+    }
+    
+    .ms-calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: #EFB3D2;
+      border-bottom: 1px solid #eaeaea;
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    
+    .ms-calendar-title {
+      font-weight: 600;
+      font-size: 18px;
+    }
+    
+    .ms-calendar-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    
+    .ms-calendar-inputs {
+      padding: 20px;
+    }
+    
+    .ms-calendar-date,
+    .ms-calendar-time {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .ms-calendar-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 0 20px 20px;
+    }
+    
+    .ms-calendar-button {
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    
+    .ms-calendar-cancel {
+      background: #f3f3f3;
+      border: 1px solid #ddd;
+    }
+    
+    .ms-calendar-save {
+      background: #68B684;
+      color: white;
+      border: 1px solid #68B684;
+    }
+    
+    .ms-calendar-save:hover {
+      background: #45a049;
+    }
+
+    @media (max-width: 767px) {
+      /* Month/Year */
+      [ms-code-calendar-month-year] {
+        font-size: 16px !important;
+      }
+
+      .daily-schedule-item {
+        display: grid !important;
+        grid-template-columns: 60px 1fr auto;
+        grid-template-rows: auto auto;
+        grid-column-gap: 8px;
+        align-items: center;
+      }
+
+      .daily-schedule-header {
+        padding-top: 15px;
+        padding-bottom: 15px;
+        padding-left: 5vw;
+        padding-right: 5vw;
+        font-size: 14px;
+      }
+      
+      .daily-schedule-time {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .daily-schedule-title {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .daily-schedule-actions {
+        grid-column: 1 / -1;
+        grid-row: 3;
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+      }
+      
+      .daily-schedule-actions > * {
+        flex: 1;
+        text-align: center;
+        font-size: 11px;
+        padding: 4px 8px;
+      }
+      
+      .daily-schedule-items {
+        width: 90vw !important;
+        padding: 0 5vw !important;
+        row-gap: 15px;
+      }
+    }
+  .ms-calendar-conflict-message {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.daily-schedule-location {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 5px;
+}
+
+.ms-create-recurring-btn:hover {
+  background-color: #0056b3 !important;
+}
+  
+  
+</style>
