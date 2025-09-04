@@ -1,0 +1,8 @@
+/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, OPTIONS
+  Access-Control-Allow-Headers: Content-Type
+
+/*.js
+  Content-Type: application/javascript
+  Access-Control-Allow-Origin: *
